@@ -15,21 +15,18 @@ import torchvision
 
 torch.backends.cuda.matmul.allow_tf32 = True
 
-def get_pipe():
+def get_pipe(CLIP_MODEL_PATH, LDM_MODEL_PATH):
     torch_dtype = torch.float16
-    feature_extractor = CLIPFeatureExtractor.from_pretrained(
-        "CLIP_MODEL_PATH")
-    clip_model = CLIPModel.from_pretrained(
-        "CLIP_MODEL_PATH",
-        torch_dtype=torch_dtype)
+    feature_extractor = CLIPFeatureExtractor.from_pretrained(CLIP_MODEL_PATH)
+    clip_model = CLIPModel.from_pretrained(CLIP_MODEL_PATH, torch_dtype=torch_dtype)
 
     pipe = DiffusionPipeline.from_pretrained(
-                "LDM_MODEL_PATH",
+                LDM_MODEL_PATH,
                 custom_pipeline="fg_pipe.py",
                 clip_model=clip_model,
                 feature_extractor=feature_extractor,
                 torch_dtype=torch_dtype,
-                local_files_only=True)
+                local_files_only=False)
     pipe = pipe.to("cuda")
     return pipe
 
